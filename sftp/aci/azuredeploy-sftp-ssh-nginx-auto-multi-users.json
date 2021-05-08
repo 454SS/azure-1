@@ -95,7 +95,7 @@
         "storageKind": "StorageV2",
         "storageAccessTier": "Hot",
         "supportsHttpsTrafficOnly": true,
-        "sshKeyFileShareName": "[parameters('sftpUser')]",
+        "sshKeyFileShareName": "[parameters('userNames')[0]]",
         "storageAccountId": "[resourceId(parameters('existingStorageAccountResourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('existingNginxStorageAccountName'))]",
         "nginxContainerName": "nginx",
         "nginxContainerImage": "nginx:latest"

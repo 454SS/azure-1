@@ -53,7 +53,7 @@
         },
         "uploadFileShareName": {
             "type": "string",
-            "defaultValue": "sftpfileshare01",
+            "defaultValue": "[concat('uploadfileshare-', parameters('userNames')[0])]",
             "metadata": {
                 "description": "Name of the SFTP upload file share to be created"
             }

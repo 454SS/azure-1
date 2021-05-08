@@ -73,14 +73,14 @@
         },
         "existingNginxStorageAccountName": {
             "type": "string",
-            "defaultValue": "[concat('sftpstg', uniqueString(resourceGroup().id))]",
+            "defaultValue": "nginxstorageaccount2021",
             "metadata": {
                 "description": "The existing storage account name where the nginx config is uploaded to the file share"
             }
         },
         "existingNginxFileShareName": {
             "type": "string",
-            "defaultValue": "sftpfileshare01",
+            "defaultValue": "sftp-nginx-conf01",
             "metadata": {
                 "description": "The name of the existing Azure file share where nginx config file is uploaded"
             }

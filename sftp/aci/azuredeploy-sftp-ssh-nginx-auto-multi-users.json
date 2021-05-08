@@ -73,7 +73,7 @@
         },
         "existingNginxStorageAccountName": {
             "type": "string",
-            "defaultValue": "nginxstorageaccount2021",
+            "defaultValue": "sftpfileshare01",
             "metadata": {
                 "description": "The existing storage account name where the nginx config is uploaded to the file share"
             }

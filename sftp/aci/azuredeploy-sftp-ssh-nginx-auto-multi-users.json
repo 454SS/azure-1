@@ -251,7 +251,7 @@
                                     "readOnly": false
                                 },
                                 {
-                                    "mountPath": "/mnt/sftp",
+                                    "mountPath": "[concat('/home/', parameters('UserNames')[0], '/', 'uploadfileshare-', parameters('userNames')[0])]",
                                     "name": "sftpvolume",
                                     "readOnly": true
                                 }

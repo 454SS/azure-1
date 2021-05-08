@@ -277,19 +277,55 @@
                 "restartPolicy": "OnFailure",
                 "volumes": [
                     {
-                        "name": "sftpvolume",
+                        "name": "[concat('uploadfileshare-', parameters('userNames')[0])]",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[parameters('UploadFileShareName')]",
+                            "shareName": "[concat('uploadfileshare-', parameters('userNames')[0])]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }
                     },
-                     {
-                        "name": "sshkeyvolume",
+                      {
+                        "name": "[concat(parameters('userNames')[0])]",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[variables('sshKeyFileShareName')]",
+                            "shareName": "[concat('sshkey-', parameters('userNames')[0])]",
+                            "storageAccountName": "[variables('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
+                        }
+                    },
+                    {
+                       "name": "[concat('uploadfileshare-', parameters('userNames')[1])]",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[concat('uploadfileshare-', parameters('userNames')[1])]",
+                            "storageAccountName": "[variables('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
+                        }
+                    },
+                      {
+                        "name": "[concat(parameters('userNames')[1])]",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[concat('sshkey-', parameters('userNames')[1])]",
+                            "storageAccountName": "[variables('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
+                        }
+                    },
+                    {
+                       "name": "[concat('uploadfileshare-', parameters('userNames')[2])]",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[concat('uploadfileshare-', parameters('userNames')[2])]",
+                            "storageAccountName": "[variables('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
+                        }
+                    },
+                      {
+                        "name": "[concat(parameters('userNames')[2])]",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[concat('sshkey-', parameters('userNames')[2])]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }

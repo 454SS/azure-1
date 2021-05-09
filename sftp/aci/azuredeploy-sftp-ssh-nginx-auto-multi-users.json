@@ -352,7 +352,7 @@
                         "name": "nginxconf",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[parameters('nginxFileShareName')]",
+                            "shareName": "[concat('nginx-',parameters('nginxFileShareName')]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }

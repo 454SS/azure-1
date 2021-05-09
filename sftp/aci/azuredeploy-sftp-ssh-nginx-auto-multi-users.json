@@ -29,7 +29,7 @@
                 "user3"
             ],
             "metadata": {
-                "description": "Usernames to be used for SFTP access in lower case - Please update as needed based on the number of user count to create (one Azure file share per user)"
+                "description": "Usernames to be used for SFTP access in lower case - Please update as needed based on the number of user count to create (two Azure file shares per user)"
             }
         },
         "fileShareAccessTier": {
@@ -41,7 +41,7 @@
                 "TransactionOptimized"
             ],
             "metadata": {
-                "description": "File Share Access Tier to be created"
+                "description": "File Share Access Tier"
             }
         },
         "location": {
@@ -55,7 +55,7 @@
             "type": "string",
             "defaultValue": "[concat('home-', parameters('userNames')[0])]",
             "metadata": {
-                "description": "Name of the SFTP upload file share to be created"
+                "description": "SFTP Files Shares - Do not change"
             }
         },
         "containerGroupDNSLabel": {
@@ -65,18 +65,11 @@
                 "description": "DNS label for container group"
             }
         },
-        "nginxConfCount": {
-            "type": "int",
-            "defaultValue": 1,
-            "metadata": {
-                "description": "The number of NGINX conf files"
-            }
-        },        
         "nginxFileShareName": {
             "type": "string",
-            "defaultValue": "conf01",
+            "defaultValue": "ngimx-conf",
             "metadata": {
-                "description": "Azure File Share to create where nginx config file is uploaded"
+                "description": "NGINX Files Share - Do not change - where nginx config file is uploaded"
             }
         }
     },

@@ -65,24 +65,11 @@
                 "description": "DNS label for container group"
             }
         },
-        "existingStorageAccountResourceGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Resource group name for existing storage account where nginx config resides"
-            }
-        },
-        "existingNginxStorageAccountName": {
-            "type": "string",
-            "defaultValue": "sanginxsftp",
-            "metadata": {
-                "description": "The existing storage account name where the nginx config is uploaded to the file share"
-            }
-        },
-        "existingNginxFileShareName": {
+        "nginxFileShareName": {
             "type": "string",
             "defaultValue": "conf01",
             "metadata": {
-                "description": "The name of the existing Azure file share where nginx config file is uploaded"
+                "description": "Azure File Share to create where nginx config file is uploaded"
             }
         }
     },
@@ -96,7 +83,6 @@
         "storageAccessTier": "Hot",
         "supportsHttpsTrafficOnly": true,
         "sshKeyFileShareName": "[parameters('userNames')[0]]",
-        "storageAccountId": "[resourceId(parameters('existingStorageAccountResourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('existingNginxStorageAccountName'))]",
         "nginxContainerName": "nginx",
         "nginxContainerImage": "nginx:latest"
 
@@ -162,18 +148,14 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
             "apiVersion": "2019-06-01",
-              "copy": {
-                "name": "nginxshareCreate",
-                "count": "1"
-            },
-            "name": "[concat(variables('storageAccountName'), '/default/', 'nginx-', parameters('existingNginxFileShareName')[copyIndex('nginxshareCreate')])]",
+            "name": "[concat(variables('storageAccountName'), '/default/', 'nginx-', parameters('nginxFileShareName'))]",
              "dependsOn": [
                 "[variables('storageAccountName')]"
             ],
             "properties": {
                 "accessTier": "[parameters('fileShareAccessTier')]"
             }
-        },        
+        },
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[variables('sftpContainerGroupName')]",
@@ -359,7 +341,7 @@
                         "name": "nginxconf",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[parameters('existingNginxFileShareName')]",
+                            "shareName": "[parameters('nginxFileShareName')]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }

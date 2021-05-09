@@ -164,9 +164,9 @@
             "apiVersion": "2019-06-01",
               "copy": {
                 "name": "nginxshareCreate",
-                "count": "[parameters('sftpUserCount')]"
+                "count": "1"
             },
-            "name": "[concat(variables('storageAccountName'), '/default/', 'nginx-', parameters('existingNginxFileShareName'))]",
+            "name": "[concat(variables('storageAccountName'), '/default/', 'nginx-', parameters('existingNginxFileShareName')[copyIndex('nginxshareCreate')])]",
              "dependsOn": [
                 "[variables('storageAccountName')]"
             ],

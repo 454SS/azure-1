@@ -159,7 +159,7 @@
                 "name": "nginxshareCreate",
                 "count": "[parameters('nginxConfCount')]"
             },
-            "name": "[concat(variables('storageAccountName'), '/default/', 'nginx-', parameters('nginxFileShareName')[copyIndex('nginxshareCreate')])]",
+            "name": "[concat(variables('storageAccountName'), '/default/', 'uploadfileshare-', parameters('nginxFileShareName')[copyIndex('nginxshareCreate')])]",
              "dependsOn": [
                 "[variables('storageAccountName')]"
             ],

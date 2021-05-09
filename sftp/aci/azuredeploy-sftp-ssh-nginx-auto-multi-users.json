@@ -78,7 +78,7 @@
         "sftpContainerName": "sftp",
         "sftpContainerImage": "atmoz/sftp:latest",
         "sftpEnvVariable": "[concat(parameters('userNames')[0], '::1001', ' ', parameters('userNames')[1], '::1001', ' ', parameters('userNames')[2], '::1001')]",
-        "storageAccountName": "[concat('sasftp', uniqueString(resourceGroup().id))]",
+        "storageAccountName": "[concat('sasftpnginx', uniqueString(resourceGroup().id))]",
         "storageKind": "StorageV2",
         "storageAccessTier": "Hot",
         "supportsHttpsTrafficOnly": true,

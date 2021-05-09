@@ -166,7 +166,7 @@
             "properties": {
                 "accessTier": "[parameters('fileShareAccessTier')]"
             }
-        }
+        },
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[variables('sftpContainerGroupName')]",

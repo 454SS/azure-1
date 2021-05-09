@@ -24,12 +24,12 @@
         "userNames": {
             "type": "array",
             "defaultValue": [
-                "charbel",
-                "peter",
-                "marcel"
+                "user1",
+                "user2",
+                "user3"
             ],
             "metadata": {
-                "description": "Usernames to be used for SFTP access in lower case - Please update as needed based on the number of user count to create (one Azure file share per user)"
+                "description": "Usernames to be used for SFTP access in lower case - Please update as needed based on the number of user count to create (two Azure file shares per user)"
             }
         },
         "fileShareAccessTier": {
@@ -50,7 +50,14 @@
             "metadata": {
                 "description": "Primary location for resources"
             }
-        }
+        },
+        "containerGroupDNSLabel": {
+            "type": "string",
+            "defaultValue": "[uniqueString(resourceGroup().id, deployment().name)]",
+            "metadata": {
+                "description": "DNS label for container group"
+            }
+        }        
     },
     "variables": {
         "sftpContainerName": "sftp",
@@ -97,7 +104,7 @@
                 "name": "fileshareCreate",
                 "count": "[parameters('sftpUserCount')]"
             },
-            "name": "[concat(variables('storageAccountName'), '/default/', 'uploadfileshare-', parameters('userNames')[copyIndex('fileshareCreate')])]",
+            "name": "[concat(variables('storageAccountName'), '/default/', 'home-', parameters('userNames')[copyIndex('fileshareCreate')])]",
              "dependsOn": [
                 "[variables('storageAccountName')]"
             ],
@@ -155,8 +162,8 @@
                             ],
                             "volumeMounts": [
                                 {
-                                    "mountPath": "[concat('/home/', parameters('UserNames')[0], '/', 'uploadfileshare-', parameters('userNames')[0])]",
-                                    "name": "[concat('uploadfileshare-', parameters('userNames')[0])]",
+                                    "mountPath": "[concat('/home/', parameters('UserNames')[0], '/', 'home-', parameters('userNames')[0])]",
+                                    "name": "[concat('home-', parameters('userNames')[0])]",
                                     "readOnly": false
                                 },
                                   {
@@ -165,8 +172,8 @@
                                     "readOnly": true
                                 },
                                 {
-                                    "mountPath": "[concat('/home/', parameters('UserNames')[1], '/', 'uploadfileshare-', parameters('userNames')[1])]",
-                                    "name": "[concat('uploadfileshare-', parameters('userNames')[1])]",
+                                    "mountPath": "[concat('/home/', parameters('UserNames')[1], '/', 'home-', parameters('userNames')[1])]",
+                                    "name": "[concat('home-', parameters('userNames')[1])]",
                                     "readOnly": false
                                 },
                                   {
@@ -175,8 +182,8 @@
                                     "readOnly": true
                                 },
                                 {
-                                    "mountPath": "[concat('/home/', parameters('UserNames')[2], '/', 'uploadfileshare-', parameters('userNames')[2])]",
-                                    "name": "[concat('uploadfileshare-', parameters('userNames')[2])]",
+                                    "mountPath": "[concat('/home/', parameters('UserNames')[2], '/', 'home-', parameters('userNames')[2])]",
+                                    "name": "[concat('home-', parameters('userNames')[2])]",
                                     "readOnly": false
                                 },
                                   {
@@ -196,15 +203,16 @@
                             "protocol": "TCP",
                             "port": 22
                         }
-                    ]
+                    ],
+                    "dnsNameLabel": "[parameters('containerGroupDNSLabel')]"
                 },
                 "restartPolicy": "OnFailure",
                     "volumes": [
                     {
-                        "name": "[concat('uploadfileshare-', parameters('userNames')[0])]",
+                        "name": "[concat('home-', parameters('userNames')[0])]",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[concat('uploadfileshare-', parameters('userNames')[0])]",
+                            "shareName": "[concat('home-', parameters('userNames')[0])]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }
@@ -219,10 +227,10 @@
                         }
                     },
                     {
-                       "name": "[concat('uploadfileshare-', parameters('userNames')[1])]",
+                       "name": "[concat('home-', parameters('userNames')[1])]",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[concat('uploadfileshare-', parameters('userNames')[1])]",
+                            "shareName": "[concat('home-', parameters('userNames')[1])]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }
@@ -237,10 +245,10 @@
                         }
                     },
                     {
-                       "name": "[concat('uploadfileshare-', parameters('userNames')[2])]",
+                       "name": "[concat('home-', parameters('userNames')[2])]",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[concat('uploadfileshare-', parameters('userNames')[2])]",
+                            "shareName": "[concat('home-', parameters('userNames')[2])]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }
@@ -259,6 +267,10 @@
         }
     ],
     "outputs": {
+        "containerDNSLabel": {
+            "type": "string",
+            "value": "[concat(parameters('containerGroupDNSLabel'), '.', parameters('location'), '.azurecontainer.io')]"
+        },        
         "containerIPv4Address": {
             "type": "string",
             "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', variables('sftpContainerGroupName'))).ipAddress.ip]"

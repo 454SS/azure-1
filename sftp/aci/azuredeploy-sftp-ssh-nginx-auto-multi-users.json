@@ -24,9 +24,9 @@
         "userNames": {
             "type": "array",
             "defaultValue": [
-                "charbel",
-                "peter",
-                "marcel"
+                "user1",
+                "user2",
+                "user3"
             ],
             "metadata": {
                 "description": "Usernames to be used for SFTP access in lower case - Please update as needed based on the number of user count to create (one Azure file share per user)"

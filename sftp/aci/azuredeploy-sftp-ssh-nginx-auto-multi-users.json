@@ -65,6 +65,13 @@
                 "description": "DNS label for container group"
             }
         },
+        "nginxConfCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of NGINX conf files"
+            }
+        },        
         "nginxFileShareName": {
             "type": "string",
             "defaultValue": "conf01",
@@ -148,14 +155,18 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
             "apiVersion": "2019-06-01",
-            "name": "[concat(variables('storageAccountName'), '/default/', 'nginx-', parameters('nginxFileShareName'))]",
+              "copy": {
+                "name": "nginxshareCreate",
+                "count": "[parameters('nginxConfCount')]"
+            },
+            "name": "[concat(variables('storageAccountName'), '/default/', 'nginx-', parameters('NginxFileShareName')[copyIndex('NginxFileShareName')])]",
              "dependsOn": [
                 "[variables('storageAccountName')]"
             ],
             "properties": {
                 "accessTier": "[parameters('fileShareAccessTier')]"
             }
-        },
+        }
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[variables('sftpContainerGroupName')]",

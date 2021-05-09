@@ -160,7 +160,6 @@
             "dependsOn": [
                 "fileshareCreate",
                 "sshkeyshareCreate",
-                "nginxshareCreate",
                 "[variables('storageAccountName')]"
             ],
             "properties": {

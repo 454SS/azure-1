@@ -153,21 +153,6 @@
             }
         },
         {
-            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
-            "apiVersion": "2019-06-01",
-              "copy": {
-                "name": "nginxshareCreate",
-                "count": "[parameters('nginxConfCount')]"
-            },
-            "name": "[concat(variables('storageAccountName'), '/default/', 'uploadfileshare-', parameters('nginxFileShareName')[copyIndex('nginxshareCreate')])]",
-             "dependsOn": [
-                "[variables('storageAccountName')]"
-            ],
-            "properties": {
-                "accessTier": "[parameters('fileShareAccessTier')]"
-            }
-        },
-        {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[variables('sftpContainerGroupName')]",
             "apiVersion": "2019-12-01",
@@ -352,7 +337,7 @@
                         "name": "nginxconf",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[concat('nginx-',parameters('nginxFileShareName')]",
+                            "shareName": "[concat('uploadfileshare-', parameters('userNames')[0])]",
                             "storageAccountName": "[variables('storageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountName'),'2019-06-01').keys[0].value]"
                         }

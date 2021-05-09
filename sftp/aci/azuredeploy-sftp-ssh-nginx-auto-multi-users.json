@@ -67,15 +67,15 @@
         },
         "nginxFileShareName": {
             "type": "string",
-            "defaultValue": "ngimx-conf",
+            "defaultValue": "nginx-conf",
             "metadata": {
                 "description": "NGINX Files Share - Do not change - where nginx config file is uploaded"
             }
         }
     },
     "variables": {
-        "sftpContainerName": "sftp",
-        "sftpContainerGroupName": "sftp-group",
+        "sftpContainerName": "sftp-nginx",
+        "sftpContainerGroupName": "sftp-nginx-group",
         "sftpContainerImage": "atmoz/sftp:latest",
         "sftpEnvVariable": "[concat(parameters('userNames')[0], '::1001', ' ', parameters('userNames')[1], '::1001', ' ', parameters('userNames')[2], '::1001')]",
         "storageAccountName": "[concat('sftpstg', uniqueString(resourceGroup().id))]",

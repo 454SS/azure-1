@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "yourName": {
+      "type": "string"
+    }
+  },
+  "functions": [],
+  "variables": {
+    "hello": "Hello World! - Hi"
+  },
+  "resources": [],
+  "outputs": {
+    "helloWorld": {
+      "type": "string",
+      "value": "[format('{0} {1}', variables('hello'), parameters('yourName'))]"
+    }
+  }
+}

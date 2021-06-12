@@ -1,7 +1,7 @@
 param virtualNetworkName string = 'vnet-ent-hub-cc-10.61'
 param vNetIpPrefix string = '10.61.0.0/16'
 param bastionSubnetIpPrefix string = '10.61.5.0/24'
-param bastionHostName string
+param bastionHostName string = 'WCIPBASTION01'
 param location string = resourceGroup().location
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2020-06-01' = {

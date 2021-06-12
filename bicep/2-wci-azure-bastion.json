@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.63.48766",
-      "templateHash": "8512416308484997449"
+      "templateHash": "16739440842836037914"
     }
   },
   "parameters": {
@@ -22,7 +22,8 @@
       "defaultValue": "10.61.5.0/24"
     },
     "bastionHostName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": "WCIPBASTION01"
     },
     "location": {
       "type": "string",

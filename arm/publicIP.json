@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ipName": {
+        "type": "string",
+        "metadata": {
+              "description": "Name for the Network Interface"
+        }
+      },
+      "tags":{
+        "type": "object",
+          "metadata": {
+            "description": "An array of tag objects, takes two objects with properties [string]key, [string]value"
+        }
+      }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-08-01",
+            "name": "[parameters('ipName')]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
+            "properties": {}
+        }
+  ],
+  "outputs": {
+    "publicIPResource": {
+        "value": "[resourceId( 'Microsoft.Network/publicIPAddresses', parameters('ipName'))]",
+        "type": "string"
+    }
+  }
+}

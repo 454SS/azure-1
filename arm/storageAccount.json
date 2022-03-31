@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "storageAccountName": {
+        "type": "string",
+        "metadata": {
+              "description": "Name of the storage account"
+        }
+      },
+      "tags":{
+        "type": "object",
+          "metadata": {
+            "description": "An array of tag objects, takes two objects with properties [string]key, [string]value"
+        }
+    }
+    },
+    "variables": {
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Storage/storageAccounts",
+        "name": "[parameters('storageAccountName')]",
+        "apiVersion": "2017-10-01",
+        "kind":"StorageV2",
+        "sku": {
+          "name": "Standard_LRS",
+          "tier": "Standard"
+       },
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "supportsHttpsTrafficOnly": true,
+          "encryption": {
+            "services": {
+                "file": {
+                    "enabled": true
+                },
+                "blob": {
+                    "enabled": true
+                }
+            },
+            "keySource": "Microsoft.Storage"
+         } 
+        }
+      }
+  ]
+}

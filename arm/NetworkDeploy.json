@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet": {
+            "type": "object",
+            "defaultValue": {
+                "resourceGroup": "core",
+                "vnet": { "name": "core", "addressPrefixes": [ "10.0.0.0/16" ] },
+                "subnets": [
+                    { "name": "GatewaySubnet", "addressPrefix": "10.0.0.0/24"},
+                    { "name": "subnet1", "addressPrefix": "10.0.1.0/24" },
+                    { "name": "subnet2", "addressPrefix": "10.0.2.0/24" },
+                    { "name": "subnet3", "addressPrefix": "10.0.3.0/24" }
+                ],
+                "createGateway": true,
+                "enableBGP": false,
+                "gatewaySku": "Basic"
+            },
+            "metadata": { 
+                "description": "vnet object.  See defaultValue for example. The gatewaySku string is any of Basic|VpnGw1|VpnGw2|VpnGw3"
+            }
+        }
+    },
+    "variables": {
+      "vnetUrl": "[uri(deployment().properties.templateLink.uri, 'vnet.json')]",
+      "vnetDeploymentName": "[concat('deployVnet-', parameters('vnet').vnet.name)]"
+    },
+    "resources": [
+      {
+        "name": "[variables('vnetDeploymentName')]",
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2017-05-10",
+        "resourceGroup": "[parameters('vnet').resourceGroup]",
+        "properties": {
+          "mode": "Incremental",
+          "parameters": {
+            "vnetName": {
+                "value": "[parameters('vnet').vnet.name]"
+            },
+            "vNetAddressPrefixes": {
+                "value": "[parameters('vnet').vnet.addressPrefixes]"
+            },
+            "subnets": {
+                "value": "[parameters('vnet').subnets]"
+            },
+            "createGateway": {
+                "value": "[parameters('vnet').createGateway]"
+            },
+            "gatewaySku": {
+                "value": "[parameters('vnet').gatewaySku]"
+            },
+            "enableBGP":{
+                "value": "[parameters('vnet').enableBGP]"
+            }
+          },
+          "templateLink": {
+            "uri": "[variables('vnetUrl')]",
+            "contentVersion": "1.0.0.0"
+          }
+        }
+      }
+    ],
+    "outputs": {
+      "vpnGatewayPipId": {
+          "type": "string",
+          "value": "[reference(variables('vnetDeploymentName')).outputs.gatewayPipId.value]"
+      }
+    }
+  }

@@ -1,0 +1,125 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachineName": {
+            "type": "String",
+            "metadata": {
+                "description": "Assigning a name for your VM based on defined Naming Policies."
+            }
+        },
+        "virtualMachineSize": {
+            "defaultValue": "Standard_A1",
+            "type": "String",
+            "metadata": {
+                "description": "Azure Virtual machine size"
+            }
+        },
+        "availabilitySetName": {
+            "type": "String"
+        },
+        "managedDisks":{
+            "type": "array",
+            "metadata": {
+                "description": "An array of managed disk objects, takes two objects with properties [int]lun, [int]size"
+            }
+        },
+        "tags":{
+            "type": "object",
+              "metadata": {
+                "description": "An array of tag objects, takes two objects with properties [string]key, [string]value"
+            }
+        },
+        "imageSKU": {
+            "type": "String"
+        },
+        "imagePublisher": {
+            "type": "String"
+        },
+        "imageOffer": {
+            "type": "String"
+        },
+        "diagnosticStorageAccount": {
+            "type": "String"
+        },
+        "nicName": {
+            "type": "String"
+        },
+        "adminUsername": {
+            "defaultValue": "",
+            "minLength": 1,
+            "type": "String",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        }
+    },
+    "variables": {
+        "managedOSDiskName": "[concat('dsk-os-', parameters('virtualMachineName'))]",
+        "managedDataDiskName": "[concat('dsk-data0-', parameters('virtualMachineName'))]",
+        "diagnosticStorageAccountUrl": "[concat('https://', parameters('diagnosticStorageAccount'), '.blob.core.windows.net')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('virtualMachineName')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachineName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('imagePublisher')]",
+                        "offer": "[parameters('imageOffer')]",
+                        "version": "latest",
+                        "sku": "[parameters('imageSKU')]"
+                    },
+                    "osDisk": {
+                        "name": "[variables('managedOSDiskName')]",
+                        "createOption": "FromImage"
+                    },
+                    "copy": [
+                        {
+                            "name": "dataDisks",
+                            "count": "[length(parameters('managedDisks'))]",
+                            "input": {
+                                "name": "[concat(variables('managedDataDiskName'), copyIndex('dataDisks', 1))]",
+                                "diskSizeGB": "[parameters('managedDisks')[copyIndex('dataDisks')].size]",
+                                "lun": "[parameters('managedDisks')[copyIndex('dataDisks')].lun]",
+                                "createOption": "Empty"
+                            }
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicName'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile":{
+                    "bootDiagnostics":{
+                       "enabled" : "[if(greater(length(parameters('diagnosticStorageAccount')), 0), 'true', 'false')]",
+                       "storageUri": "[if(greater(Length(parameters('diagnosticStorageAccount')), 0), variables('diagnosticStorageAccountUrl'), json('null'))]"   
+                    } 
+                   }
+            },
+            "dependsOn": []
+        }
+    ]
+}

@@ -1,0 +1,267 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachineName": {
+            "type": "Array",
+            "metadata": {
+                "description": "VM Objects to deploy"
+            }
+        },
+        "virtualMachineSize": {
+            "defaultValue": "Standard_A1",
+            "type": "String",
+            "metadata": {
+                "description": "Azure Virtual machine size"
+            }
+        },
+        "availabilitySetName": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "managedDisks":{
+            "type": "object",
+            "metadata": {
+                "description": "An array of managed disk objects, takes two objects with properties [int]lun, [int]size "
+            }
+        },
+        "tags":{
+            "type": "object",
+              "metadata": {
+                "description": "An tag object, key value pair maps directly to the tag property of a resource"
+            }
+        },
+		"osDiskType": {
+            "type": "string"
+        },
+        "virtualNetworkResourceGroup": {
+            "type": "String"
+        },
+        "virtualNetworkName": {
+            "type": "String"
+        },
+        "subnetName": {
+            "type": "String"
+        },
+        "ipStaticAddress": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "diagnosticStorageAccount": {
+            "minLength": 1,
+            "type": "String"
+        },
+        "adminUsername": {
+            "defaultValue": "touradmin",
+            "minLength": 1,
+            "type": "String",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        }
+    },
+    "variables": {
+        "vm-Url": "[uri(deployment().properties.templateLink.uri, 'vm.json')]",
+        "vm-as-url": "[uri(deployment().properties.templateLink.uri, 'vm-as.json')]",
+        "vm-disk-url": "[uri(deployment().properties.templateLink.uri, 'vm-disk.json')]",
+        "vm-as-disk-url": "[uri(deployment().properties.templateLink.uri, 'vm-as-disk.json')]",
+        "availabilitySet-url": "[uri(deployment().properties.templateLink.uri, 'availabilitySet.json')]",
+        "nic-url": "[uri(deployment().properties.templateLink.uri, 'nic.json')]",
+        "storageAccountSetUrl": "[uri(deployment().properties.templateLink.uri, 'storageAccount.json')]",
+        "asDeploymentName": "[concat('deployVM-', 'availabilitySet')]",
+        "storageAccountDeploymentName": "[concat('deployVM-', 'StorageAccount')]",
+        "managedDiskArray": "[createArray(parameters('managedDisks').disks)]"
+    },
+    "resources": [
+        {
+            "condition": "[greater(Length(parameters('diagnosticStorageAccount')), 0)]",
+            "name": "[variables('storageAccountDeploymentName')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "properties":{
+                "mode":"Incremental",
+                "parameters":{
+                    "storageAccountName": {
+                        "value": "[parameters('diagnosticStorageAccount')]"
+                    },
+                    "tags": {
+                     "value": "[parameters('tags')]"
+                 }
+                },
+                "templateLink": {
+                    "uri": "[variables('storageAccountSetUrl')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "copy": {
+                "name": "NicCopy",
+                "count": "[length(parameters('virtualMachineName'))]"
+            }, 
+            "type": "Microsoft.Resources/deployments",
+            "name": "[concat(parameters('virtualMachineName')[copyIndex('NicCopy')].name, '-Nic01')]",
+            "apiVersion": "2017-05-10",
+            "properties":{
+                "mode":"Incremental",
+                "parameters":{
+                    "nicName": {
+                        "value": "[concat(parameters('virtualMachineName')[copyIndex('NicCopy')].name, '-Nic01')]"
+                    },
+                    "ipStaticAddress": {
+                        "value": "[parameters('ipStaticAddress')]"
+                    },
+                    "virtualNetworkResourceGroup": {
+                        "value": "[parameters('virtualNetworkResourceGroup')]"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[parameters('virtualNetworkName')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "tags": {
+                     "value": "[parameters('tags')]"
+                 }
+                },
+                "templateLink": {
+                    "uri": "[variables('nic-url')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+           "condition": "[greater(Length(parameters('availabilitySetName')), 0)]",
+           "name": "[variables('asDeploymentName')]",
+           "type": "Microsoft.Resources/deployments",
+           "apiVersion": "2017-05-10",
+           "properties":{
+               "mode":"Incremental",
+               "parameters":{
+                   "availabilitySetName": {
+                       "value": "[parameters('availabilitySetName')]"
+                   },
+                   "tags": {
+                    "value": "[parameters('tags')]"
+                }
+               },
+               "templateLink": {
+                   "uri": "[variables('availabilitySet-url')]",
+                   "contentVersion": "1.0.0.0"
+               }
+           }
+        },
+        {
+            "copy": {
+                "name": "VMCopywDisk",
+                "count": "[length(parameters('virtualMachineName'))]"
+            }, 
+            "condition": "[not(empty(variables('managedDiskArray')[0]))]",
+            "Name": "[concat(parameters('virtualMachineName')[copyIndex('VMCopywDisk')].name, '-IncludingDisk')]",
+            "apiVersion": "2017-05-10",
+            "type": "Microsoft.Resources/deployments",
+            "properties":{
+                "mode":"Incremental",
+                "parameters":{
+                    "virtualMachineName": {
+                        "value": "[toUpper(parameters('virtualMachineName')[copyIndex('VMCopywDisk')].name)]"
+                    },
+                    "virtualMachineSize": {
+                        "value": "[parameters('virtualMachineSize')]"
+                    },
+                    "availabilitySetName": {
+                        "value": "[parameters('availabilitySetName')]"
+                    },
+                    "managedDisks": {
+                        "value": "[parameters('managedDisks').disks]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "imageOffer": {
+                        "value": "[parameters('imageOffer')]"
+                    },
+                    "imagePublisher": {
+                        "value": "[parameters('imagePublisher')]"
+                    },
+                    "imageSku": {
+                        "value": "[parameters('imageSKU')]"
+                    },
+                    "diagnosticStorageAccount": {
+                        "value": "[parameters('diagnosticStorageAccount')]"
+                    },
+                    "nicName":{
+                        "value": "[reference(concat(parameters('virtualMachineName')[copyIndex('VMCopywDisk')].name, '-Nic01')).outputs.nicName.value]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[if(greater(length(parameters('availabilitySetName')),0), variables('vm-as-disk-url'), variables('vm-disk-url'))]",
+                    "contentVersion": "1.0.0.0"
+                }
+            },
+            "dependsOn": [
+                "[variables('storageAccountDeploymentName')]",
+                "nicCopy"
+            ]
+         },
+         {
+            "copy": {
+                "name": "VMCopy",
+                "count": "[length(parameters('virtualMachineName'))]"
+            }, 
+            "condition": "[empty(variables('managedDiskArray')[0])]",
+            "Name": "[parameters('virtualMachineName')[copyIndex('VMCopy')].name]",
+            "apiVersion": "2017-05-10",
+            "type": "Microsoft.Resources/deployments",
+            "properties":{
+                "mode":"Incremental",
+                "parameters":{
+                    "virtualMachineName": {
+                        "value": "[toUpper(parameters('virtualMachineName')[copyIndex('VMCopy')].name)]"
+                    },
+                    "virtualMachineSize": {
+                        "value": "[parameters('virtualMachineSize')]"
+                    },
+                    "availabilitySetName": {
+                        "value": "[parameters('availabilitySetName')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "diagnosticStorageAccount": {
+                        "value": "[parameters('diagnosticStorageAccount')]"
+                    },
+                    "nicName":{
+                        "value": "[reference(concat(parameters('virtualMachineName')[copyIndex('VMCopy')].name, '-Nic01')).outputs.nicName.value]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[if(greater(length(parameters('availabilitySetName')),0), variables('vm-as-url'), variables('vm-url'))]",
+                    "contentVersion": "1.0.0.0"
+                }
+            },
+            "dependsOn": [
+                "[variables('storageAccountDeploymentName')]",
+                "nicCopy"
+            ]
+         }
+    ]
+}

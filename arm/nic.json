@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nicName": {
+        "type": "string",
+        "metadata": {
+              "description": "Name for the Network Interface"
+        }
+      },
+      "ipStaticAddress": {
+        "type": "string",
+        "metadata": {
+              "description": "Static Address must match target subnet"
+        }
+      },
+      "virtualNetworkResourceGroup": {
+        "type": "String"
+      },
+      "virtualNetworkName": {
+        "type": "String"
+      },
+      "subnetName": {
+        "type": "String"
+      },
+      "tags":{
+        "type": "object",
+          "metadata": {
+            "description": "An array of tag objects, takes two objects with properties [string]key, [string]value"
+        }
+      }
+    },
+    "variables": {
+        "virtualNetworkId": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "subnetRef": "[concat(variables('virtualNetworkId'), '/subnets/', parameters('subnetName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[parameters('nicName')]",
+            "apiVersion": "2018-08-01",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "[if(greater(length(parameters('ipStaticAddress')), 0), 'Static', 'Dynamic')]",
+                            "privateIPAddress": "[if(greater(length(parameters('ipStaticAddress')), 0), parameters('ipStaticAddress'), json('null'))]",
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        }
+  ],
+  "outputs": {
+      "nicName":{
+          "type": "string",
+          "value": "[parameters('nicName')]"
+      }
+  }
+}

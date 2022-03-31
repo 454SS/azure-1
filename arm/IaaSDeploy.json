@@ -19,14 +19,6 @@
             "defaultValue": "",
             "type": "String"
         },
-        /*
-        "managedDisks":{
-            "type": "object",
-            "metadata": {
-                "description": "An array of managed disk objects, takes two objects with properties [int]lun, [int]size "
-            }
-        },
-        */
         "tags":{
             "type": "object",
               "metadata": {
@@ -45,11 +37,6 @@
             "defaultValue": "WindowsServer",
             "type": "String"
         },
-        /*
-        "virtualNetworkResourceGroup": {
-            "type": "String"
-        },
-        */
         "virtualNetworkName": {
             "type": "String"
         },

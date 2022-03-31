@@ -177,9 +177,6 @@
                     "availabilitySetName": {
                         "value": "[parameters('availabilitySetName')]"
                     },
-                    "managedDisks": {
-                        "value": "[parameters('managedDisks').disks]"
-                    },
                     "tags": {
                         "value": "[parameters('tags')]"
                     },

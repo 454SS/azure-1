@@ -75,8 +75,7 @@
         "nic-url": "[uri(deployment().properties.templateLink.uri, 'nic.json')]",
         "storageAccountSetUrl": "[uri(deployment().properties.templateLink.uri, 'storageAccount.json')]",
         "asDeploymentName": "[concat('deployVM-', 'availabilitySet')]",
-        "storageAccountDeploymentName": "[concat('deployVM-', 'StorageAccount')]",
-        //"managedDiskArray": "[createArray(parameters('managedDisks').disks)]"
+        "storageAccountDeploymentName": "[concat('deployVM-', 'StorageAccount')]"
     },
     "resources": [
         {

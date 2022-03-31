@@ -76,7 +76,7 @@
         "storageAccountSetUrl": "[uri(deployment().properties.templateLink.uri, 'storageAccount.json')]",
         "asDeploymentName": "[concat('deployVM-', 'availabilitySet')]",
         "storageAccountDeploymentName": "[concat('deployVM-', 'StorageAccount')]",
-        "managedDiskArray": "[createArray(parameters('managedDisks').disks)]"
+        //"managedDiskArray": "[createArray(parameters('managedDisks').disks)]"
     },
     "resources": [
         {

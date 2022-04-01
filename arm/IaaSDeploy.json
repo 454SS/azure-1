@@ -19,6 +19,12 @@
             "defaultValue": "",
             "type": "String"
         },
+        "managedDisks":{
+            "type": "object",
+            "metadata": {
+                "description": "An array of managed disk objects, takes two objects with properties [int]lun, [int]size "
+            }
+        },
         "tags":{
             "type": "object",
               "metadata": {
@@ -35,6 +41,9 @@
         },
         "imageOffer": {
             "defaultValue": "WindowsServer",
+            "type": "String"
+        },
+        "virtualNetworkResourceGroup": {
             "type": "String"
         },
         "virtualNetworkName": {
@@ -75,7 +84,8 @@
         "nic-url": "[uri(deployment().properties.templateLink.uri, 'nic.json')]",
         "storageAccountSetUrl": "[uri(deployment().properties.templateLink.uri, 'storageAccount.json')]",
         "asDeploymentName": "[concat('deployVM-', 'availabilitySet')]",
-        "storageAccountDeploymentName": "[concat('deployVM-', 'StorageAccount')]"
+        "storageAccountDeploymentName": "[concat('deployVM-', 'StorageAccount')]",
+        "managedDiskArray": "[createArray(parameters('managedDisks').disks)]"
     },
     "resources": [
         {
@@ -176,6 +186,9 @@
                     },
                     "availabilitySetName": {
                         "value": "[parameters('availabilitySetName')]"
+                    },
+                    "managedDisks": {
+                        "value": "[parameters('managedDisks').disks]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"

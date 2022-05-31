@@ -8,6 +8,9 @@
         "networkInterfaceName": {
             "type": "string"
         },
+        "osdiskname":{
+            "type": "string"
+        },
         "subnetName": {
             "type": "string"
         },
@@ -197,7 +200,7 @@
                 "storageProfile": {
                     "osDisk": {
                         "createOption": "fromImage",
-                        "name": "[concat(parameters('virtualMachineName'),'-OS')]",
+                        "name": "[parameters('osdiskname')]",
                         "managedDisk": {
                             "storageAccountType": "[parameters('osDiskType')]"
                         },
